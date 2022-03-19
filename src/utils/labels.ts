@@ -4,5 +4,6 @@ export const NO_JS_FILE = "File must be a Javascript file";
 export const FAILED_TO_CREATE_BOILERPLATE = "Failed to create the boilerplate";
 export const CREATED_FILE = "File successfully created";
 export const FILE_CREATION_PLACEHOLDER = 'Insert a name for the file';
-export const COMMENT_LABEL = "Write a new comment";
+export const COMMENT_LABEL = "Writing as:";
 export const COMMENT_ID = "shikari";
+export const COMMENT_PLACEHOLDER = "Write something... (Cmd+Enter to save)";

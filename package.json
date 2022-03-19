@@ -18,22 +18,24 @@
 			{
 				"command": "shikari.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "shikari.saveComment",
+				"title": "Save comment",
+				"enablement": "!commentIsEmpty"
 			}
 		],
 		"menus": {
 			"comments/commentThread/context": [
 				{
 					"command": "shikari.saveComment",
-					"title": "Save comment",
 					"when": "commentEditorFocused"
 				}
 			],
 			"comments/comment/context": [
 				{
 					"command": "shikari.saveComment",
-					"title": "Save comment",
-					"group": "inline@1",
-					"when": "commentIsEmpty"
+					"when": "commentEditorFocused"
 				}
 			]
 		}		

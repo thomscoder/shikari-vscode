@@ -1,5 +1,23 @@
 import * as vscode from "vscode";
-import { COMMENT_ID } from "../utils/labels";
+import { COMMENT_ID, COMMENT_LABEL, COMMENT_PLACEHOLDER } from "../utils/labels";
+
+
+let shikariCommentId = 0;
+class ShikariComment implements vscode.Comment {
+    id: number;
+    label: string | undefined;
+    bodyToSave: string;
+    constructor(
+        public body: string,
+        public author: vscode.CommentAuthorInformation,
+        public shikariCommentThread: vscode.CommentThread,
+        public mode: vscode.CommentMode,
+        public contextValue?: string | undefined,
+    ) {
+        this.id = ++shikariCommentId;
+        this.bodyToSave = this.body;
+    }
+}
 
 /** Creates a comment thread */
 export const commentsHandler = (uri: vscode.Uri, doc: vscode.TextDocument, context: vscode.ExtensionContext) => {
@@ -16,9 +34,23 @@ export const commentsHandler = (uri: vscode.Uri, doc: vscode.TextDocument, conte
         }
     };
 
-    // Register the command to create the comment
-    context.subscriptions.push(vscode.commands.registerCommand('shikari.createComment', (reply: vscode.CommentReply) => {
-		console.log(reply.text);
-	}));
+    // Comment options
+    commentController.options = {
+        placeHolder: COMMENT_PLACEHOLDER,
+    };
 
+    // Register the command to create the comment
+    let createComment = vscode.commands.registerCommand('shikari.saveComment', (reply: vscode.CommentReply) => {
+		vscode.window.showInformationMessage(reply.text);
+		let commentThread = reply.thread;
+        let newComment: ShikariComment = new ShikariComment(
+            reply.text, 
+            {name: 'thomscoder'}, 
+            commentThread, 
+            vscode.CommentMode.Preview,
+            undefined
+        );
+        commentThread.comments = [...commentThread.comments, newComment];
+	});
+    context.subscriptions.push(createComment);
 };
