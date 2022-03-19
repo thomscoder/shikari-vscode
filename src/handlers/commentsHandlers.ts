@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
-import { COMMENT_ID, COMMENT_LABEL, COMMENT_PLACEHOLDER } from "../utils/labels";
-
+import { COMMENT_ID, COMMENT_PLACEHOLDER } from "../utils/labels";
 
 let shikariCommentId = 0;
 class ShikariComment implements vscode.Comment {
@@ -20,7 +19,7 @@ class ShikariComment implements vscode.Comment {
 }
 
 /** Creates a comment thread */
-export const commentsHandler = (uri: vscode.Uri, doc: vscode.TextDocument, context: vscode.ExtensionContext) => {
+export const commentsHandler = (uri: vscode.Uri, doc: vscode.TextDocument, context: vscode.ExtensionContext, username: string) => {
     // Start creating comment thread		
     let commentController = vscode.comments.createCommentController(COMMENT_ID, "hello world");
     context.subscriptions.push(commentController);
@@ -40,12 +39,12 @@ export const commentsHandler = (uri: vscode.Uri, doc: vscode.TextDocument, conte
     };
 
     // Register the command to create the comment
-    let createComment = vscode.commands.registerCommand('shikari.saveComment', (reply: vscode.CommentReply) => {
+    let createComment = vscode.commands.registerCommand('shikari.saveComment', async (reply: vscode.CommentReply) => {
 		vscode.window.showInformationMessage(reply.text);
 		let commentThread = reply.thread;
         let newComment: ShikariComment = new ShikariComment(
             reply.text, 
-            {name: 'thomscoder'}, 
+            {name: `@${username}`, iconPath: vscode.Uri.parse(`https://github.com/${username}.png`)}, 
             commentThread, 
             vscode.CommentMode.Preview,
             undefined

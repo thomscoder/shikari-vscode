@@ -10,13 +10,16 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:shikari.helloWorld"
+        "onCommand:shikari.startShikari"
 	],
 	"main": "./dist/extension.js",
+	"extensionDependencies": [
+		"vscode.git"
+	],
 	"contributes": {
 		"commands": [
 			{
-				"command": "shikari.helloWorld",
+				"command": "shikari.startShikari",
 				"title": "Hello World"
 			},
 			{

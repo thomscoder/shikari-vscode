@@ -15,17 +15,19 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('shikari.helloWorld', async () => {
-		// At extension activation create file 
+	let disposable = vscode.commands.registerCommand('shikari.startShikari', async () => {
+		// Get the github account
+        const session = await vscode.authentication.getSession('github', ['read:user', 'user:email'], { createIfNone: true });
+
+		const username = session.account.label;
+		// Get file name
 		let fileTitle = await vscode.window.showInputBox({placeHolder: FILE_CREATION_PLACEHOLDER});
 		if(fileTitle) {
-			const file = new CustomFile(fileTitle, watcher, context);
+			// Create the file
+			const file = new CustomFile(fileTitle, watcher, context, username);
         	file.startWriting();
 			// If file created successfully start a comment thread
 		};
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Shikari!');
 	});
 
 	context.subscriptions.push(disposable);

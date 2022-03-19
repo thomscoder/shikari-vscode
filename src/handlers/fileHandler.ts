@@ -14,12 +14,16 @@ export default class CustomFile implements FileCreation {
     #watcher: vscode.FileSystemWatcher;
     #data: string;
     #context: vscode.ExtensionContext;
+    #username: string;
 	/** Custom file creates a new Javascript or Typescript file and sets it as the active text editor
 	 * Accepts two parameters:
 	 * @param {string} name the name of the file
 	 * @param {vscode.FileSystemWatcher} watcher a file system watcher that listens for creation and modification of files
+     * @param {vscode.ExtensionContext} context extension context
+     * @param {string} username current session username. Gets its value from github account
 	 */
-    constructor(name: string, watcher: vscode.FileSystemWatcher, context: vscode.ExtensionContext) {
+    constructor(name: string, watcher: vscode.FileSystemWatcher, context: vscode.ExtensionContext, username: string) {
+        this.#username = username;
         this.#fileName = name;
         this.#watcher = watcher;
         this.#context = context;
@@ -34,7 +38,7 @@ export default class CustomFile implements FileCreation {
 			vscode.window.showInformationMessage(uri.toString());
 			
             vscode.workspace.openTextDocument((uri)).then((doc: vscode.TextDocument) => {
-				commentsHandler(uri, doc, this.#context);
+				commentsHandler(uri, doc, this.#context, this.#username);
                 vscode.window.showTextDocument(doc).then((file: vscode.TextEditor) => {
                     return;
                 });
