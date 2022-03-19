@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import path = require('path');
 import * as vscode from 'vscode';
-import { CREATED_FILE, FAILED_TO_CREATE_BOILERPLATE, NO_JS_FILE } from './utils/labels';
+import { CREATED_FILE, FAILED_TO_CREATE_BOILERPLATE, NO_JS_FILE } from '../utils/labels';
+import { commentsHandler } from './commentsHandlers';
 
 interface FileCreation {
     readonly startWriting: any;
@@ -27,9 +28,11 @@ export default class CustomFile implements FileCreation {
 	/** Once the file is created, it opens it */
     private fileEvents() {
         this.#watcher.onDidCreate(uri => {
+			// Info message with file Uri
+			vscode.window.showInformationMessage(uri.toString());
+			
             vscode.workspace.openTextDocument((uri)).then((doc: vscode.TextDocument) => {
-				
-				
+				commentsHandler(uri, doc);
                 vscode.window.showTextDocument(doc).then((file: vscode.TextEditor) => {
                     return;
                 });
