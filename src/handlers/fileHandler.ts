@@ -13,14 +13,16 @@ export default class CustomFile implements FileCreation {
     #folderPath: string;
     #watcher: vscode.FileSystemWatcher;
     #data: string;
+    #context: vscode.ExtensionContext;
 	/** Custom file creates a new Javascript or Typescript file and sets it as the active text editor
 	 * Accepts two parameters:
 	 * @param {string} name the name of the file
 	 * @param {vscode.FileSystemWatcher} watcher a file system watcher that listens for creation and modification of files
 	 */
-    constructor(name: string, watcher: vscode.FileSystemWatcher) {
+    constructor(name: string, watcher: vscode.FileSystemWatcher, context: vscode.ExtensionContext) {
         this.#fileName = name;
         this.#watcher = watcher;
+        this.#context = context;
         this.#folderPath = vscode.workspace.workspaceFolders![0].uri?.toString().split(':')[1];
         this.#data = '';
     }
@@ -32,7 +34,7 @@ export default class CustomFile implements FileCreation {
 			vscode.window.showInformationMessage(uri.toString());
 			
             vscode.workspace.openTextDocument((uri)).then((doc: vscode.TextDocument) => {
-				commentsHandler(uri, doc);
+				commentsHandler(uri, doc, this.#context);
                 vscode.window.showTextDocument(doc).then((file: vscode.TextEditor) => {
                     return;
                 });

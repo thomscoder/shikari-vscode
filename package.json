@@ -19,7 +19,24 @@
 				"command": "shikari.helloWorld",
 				"title": "Hello World"
 			}
-		]
+		],
+		"menus": {
+			"comments/commentThread/context": [
+				{
+					"command": "shikari.saveComment",
+					"title": "Save comment",
+					"when": "commentEditorFocused"
+				}
+			],
+			"comments/comment/context": [
+				{
+					"command": "shikari.saveComment",
+					"title": "Save comment",
+					"group": "inline@1",
+					"when": "commentIsEmpty"
+				}
+			]
+		}		
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",

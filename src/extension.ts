@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// At extension activation create file 
 		let fileTitle = await vscode.window.showInputBox({placeHolder: FILE_CREATION_PLACEHOLDER});
 		if(fileTitle) {
-			const file = new CustomFile(fileTitle, watcher);
+			const file = new CustomFile(fileTitle, watcher, context);
         	file.startWriting();
 			// If file created successfully start a comment thread
 		};
