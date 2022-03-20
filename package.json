@@ -26,6 +26,16 @@
 				"command": "shikari.saveComment",
 				"title": "Comment",
 				"enablement": "!commentIsEmpty"
+			},
+			{
+				"command": "shikari.deleteComment",
+				"title": "Delete",
+				"enablement": "comment == deletable"
+			},
+			{
+				"command": "shikari.editComment",
+				"title": "Edit",
+				"enablement": "comment == deletable"
 			}
 		],
 		"menus": {
@@ -33,6 +43,16 @@
 				{
 					"command": "shikari.saveComment",
 					"when": "commentEditorFocused"
+				}
+			],
+			"comments/comment/title": [
+				{
+					"command": "shikari.deleteComment",
+					"when": "commentController == shikari && comment == deletable"
+				}, 
+				{
+					"command": "shikari.editComment",
+					"when": "commentController == shikari && comment == deletable"
 				}
 			]
 		}		

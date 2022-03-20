@@ -43,7 +43,7 @@ export const commentsHandler = (context: vscode.ExtensionContext, username: stri
             {name: `${username}` ?? "anon", iconPath: vscode.Uri.parse(`https://github.com/${username}.png`)}, 
             commentThread, 
             vscode.CommentMode.Preview,
-            undefined,
+            commentThread.comments.length ? 'deletable' : undefined,
         );
         
         commentThread.comments = [...commentThread.comments, newComment];
@@ -64,4 +64,29 @@ export const commentsHandler = (context: vscode.ExtensionContext, username: stri
 	});
 
     context.subscriptions.push(createComment);
+
+    // Delete comment
+    let deleteComment: vscode.Disposable = vscode.commands.registerCommand('shikari.deleteComment', async (comment: ShikariComment) => {
+        let commentThread: vscode.CommentThread = comment.shikariCommentThread!;
+        // Remove comment from the comments thread
+        commentThread.comments = commentThread.comments.filter(c => (c as ShikariComment).id !== comment.id);
+        if(commentThread.comments.length === 0) {
+            commentThread.dispose();
+        };
+    });
+
+    context.subscriptions.push(deleteComment);
+
+    // Edit comment
+    let editComment: vscode.Disposable = vscode.commands.registerCommand('shikari.editComment', async (comment: ShikariComment) => {
+        let commentThread: vscode.CommentThread= comment.shikariCommentThread!;
+        commentThread.comments = commentThread.comments.map(c => {
+            if((c as ShikariComment).id === comment.id) {
+                c.mode = vscode.CommentMode.Editing;
+            };
+            return c;
+        });
+    });
+
+    context.subscriptions.push(editComment);
 };
