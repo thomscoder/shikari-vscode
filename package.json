@@ -20,7 +20,7 @@
 		"commands": [
 			{
 				"command": "shikari.startShikari",
-				"title": "Shikari: start shikari"
+				"title": "Shikari: Start Shikari"
 			},
 			{
 				"command": "shikari.saveComment",

@@ -8,7 +8,7 @@ import { EXTENSION_IS_RUNNING, FILE_CREATION_PLACEHOLDER } from './utils/labels'
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	// Start a file watcher to "listen for file changes in the workspace"
-	const watcher = vscode.workspace.createFileSystemWatcher("**/*.{js,ts,txt,html,css,scss}");
+	const watcher = vscode.workspace.createFileSystemWatcher("**/*.{js,ts,txt,html,css,scss,cpp,c,php,json,lock,gitignore}");
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log(EXTENSION_IS_RUNNING);

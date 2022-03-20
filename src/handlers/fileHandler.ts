@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import path = require('path');
 import * as vscode from 'vscode';
-import { CREATED_FILE, FAILED_TO_CREATE_BOILERPLATE, NO_JS_FILE } from '../utils/labels';
+import { CREATED_FILE, FAILED_TO_CREATE_BOILERPLATE, NO_EXT_FILE } from '../utils/labels';
 import { commentsHandler } from './commentsHandlers';
 
 interface FileCreation {
@@ -49,7 +49,7 @@ export default class CustomFile implements FileCreation {
 	/** Checks if the file name is a valid javascript or typescript file */
     protected nameChecker(): Boolean {
         if(this.#fileName !== '') {
-            if(this.#fileName.match(/\.(js|ts|txt|html|css|scss)$/)) {
+            if(this.#fileName.match(/\.(js|ts|txt|html|css|scss|php|json|lock|c|cpp|gitignore|)$/)) {
                 return true;
             }
         }
@@ -60,7 +60,7 @@ export default class CustomFile implements FileCreation {
     private craftFile(): void {
         const isNameRight: Boolean = this.nameChecker();
         if(!isNameRight) {
-            vscode.window.showErrorMessage(NO_JS_FILE);
+            vscode.window.showErrorMessage(NO_EXT_FILE);
             return;
         };
         fs.writeFile(path.join(this.#folderPath, this.#fileName), this.#data, err => {
