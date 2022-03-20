@@ -32,13 +32,13 @@ export default class CustomFile implements FileCreation {
     }
 
 	/** Once the file is created, it opens it */
-    private fileEvents() {
+    private fileEvents(): void {
         this.#watcher.onDidCreate(uri => {
 			// Info message with file Uri
 			vscode.window.showInformationMessage(uri.toString());
 			
             vscode.workspace.openTextDocument((uri)).then((doc: vscode.TextDocument) => {
-				commentsHandler(uri, doc, this.#context, this.#username);
+				commentsHandler(this.#context, this.#username);
                 vscode.window.showTextDocument(doc).then((file: vscode.TextEditor) => {
                     return;
                 });
@@ -49,7 +49,7 @@ export default class CustomFile implements FileCreation {
 	/** Checks if the file name is a valid javascript or typescript file */
     protected nameChecker(): Boolean {
         if(this.#fileName !== '') {
-            if(this.#fileName.match(/\.(js|ts)$/)) {
+            if(this.#fileName.match(/\.(js|ts|txt|html|css|scss)$/)) {
                 return true;
             }
         }
@@ -57,7 +57,7 @@ export default class CustomFile implements FileCreation {
     }
 
 	/** Starts the file creation and validation process */
-    private craftFile() {
+    private craftFile(): void {
         const isNameRight: Boolean = this.nameChecker();
         if(!isNameRight) {
             vscode.window.showErrorMessage(NO_JS_FILE);

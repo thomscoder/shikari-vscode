@@ -1,39 +1,12 @@
 import * as vscode from "vscode";
-import { COMMENT_ID, COMMENT_PLACEHOLDER, LIKE_REACTION, LOVE_REACTION, WOW_REACTION } from "../utils/labels";
+import { COMMENT_ID, COMMENT_PLACEHOLDER } from "../utils/labels";
+import ShikariComment from "./shikariComment";
+import { heartReaction, likeReaction, wowReaction } from "./shikariReaction";
 
-let shikariCommentId = 0;
-class ShikariComment implements vscode.Comment {
-    id: number;
-    label: string | undefined;
-    bodyToSave: string;
-    constructor(
-        public body: string,
-        public author: vscode.CommentAuthorInformation,
-        public shikariCommentThread: vscode.CommentThread,
-        public mode: vscode.CommentMode,
-        public contextValue?: string | undefined,
-        public reactions?: vscode.CommentReaction[],
-    ) {
-        this.id = ++shikariCommentId;
-        this.bodyToSave = this.body;
-    }
-}
 
-// Create reactions for comments
-class ShikariCommentReaction {
-    // Make a new reaction with specified png path
-    public static build(reactionUrl: string): vscode.CommentReaction {
-        return {
-            authorHasReacted:false, 
-            count: 0, 
-            iconPath: vscode.Uri.parse(reactionUrl), 
-            label: "reaction",
-        };
-    }
-}
 
 /** Creates a comment thread */
-export const commentsHandler = (uri: vscode.Uri, doc: vscode.TextDocument, context: vscode.ExtensionContext, username: string) => {
+export const commentsHandler = (context: vscode.ExtensionContext, username: string) => {
     // Start creating comment thread		
     let commentController = vscode.comments.createCommentController(COMMENT_ID, "shikari");
     context.subscriptions.push(commentController);
@@ -52,6 +25,13 @@ export const commentsHandler = (uri: vscode.Uri, doc: vscode.TextDocument, conte
         placeHolder: COMMENT_PLACEHOLDER,
     };
 
+    /** This handles the click on a specific reaction
+     * Also adds the "add reaction" icon
+     */
+    commentController.reactionHandler = async (comment: vscode.Comment, reaction: vscode.CommentReaction) => {
+        console.log(reaction);
+    }; 
+
 
     // Register the command to create the comment
     let createComment: vscode.Disposable = vscode.commands.registerCommand('shikari.saveComment', async (reply: vscode.CommentReply) => {
@@ -60,7 +40,7 @@ export const commentsHandler = (uri: vscode.Uri, doc: vscode.TextDocument, conte
         // Build custom comment with user session from github
         let newComment: ShikariComment = new ShikariComment(
             reply.text, 
-            {name: `@${username}`, iconPath: vscode.Uri.parse(`https://github.com/${username}.png`)}, 
+            {name: `${username}` ?? "anon", iconPath: vscode.Uri.parse(`https://github.com/${username}.png`)}, 
             commentThread, 
             vscode.CommentMode.Preview,
             undefined,
@@ -68,18 +48,20 @@ export const commentsHandler = (uri: vscode.Uri, doc: vscode.TextDocument, conte
         
         commentThread.comments = [...commentThread.comments, newComment];
         commentThread.comments.forEach(comment => {
+            // Reaction handler;
             let date = new Date();
             let hour = date.getHours();
             let minutes = date.getMinutes();
             comment.label = `${hour}:${minutes}`;
             try {
                 comment.reactions = [
-                    ShikariCommentReaction.build(LIKE_REACTION),
-                    ShikariCommentReaction.build(LOVE_REACTION),
-                    ShikariCommentReaction.build(WOW_REACTION),
+                    likeReaction.build(),
+                    heartReaction.build(),
+                    wowReaction.build(),
                 ];
             } catch {}
         });
 	});
+
     context.subscriptions.push(createComment);
 };
