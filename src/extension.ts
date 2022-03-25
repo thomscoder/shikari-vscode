@@ -17,9 +17,9 @@ export function activate(context: vscode.ExtensionContext) {
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('shikari.startShikari', async () => {
 		// Get the github account
-        const session = await vscode.authentication.getSession('github', ['read:user', 'user:email'], { createIfNone: true });
+        const session = await vscode.authentication.getSession('github', ['read:user', 'user:email'], { createIfNone: false });
 
-		const username = session.account.label;
+		const username = session?.account.label ?? 'anonymous';
 		// Get file name
 		let fileTitle = await vscode.window.showInputBox({placeHolder: FILE_CREATION_PLACEHOLDER});
 		if(fileTitle) {

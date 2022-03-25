@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { COMMENT_ID, COMMENT_PLACEHOLDER } from "../utils/labels";
+import { COMMENT_ID, COMMENT_PLACEHOLDER, DEFAULT_USERNAME } from "../utils/labels";
 import ShikariComment from "./shikariComment";
 import { heartReaction, likeReaction, wowReaction } from "./shikariReaction";
 
@@ -35,12 +35,13 @@ export const commentsHandler = (context: vscode.ExtensionContext, username: stri
 
     // Register the command to create the comment
     let createComment: vscode.Disposable = vscode.commands.registerCommand('shikari.saveComment', async (reply: vscode.CommentReply) => {
+
         reply.thread.label = `New comment from @${username}`;
 		let commentThread = reply.thread;
         // Build custom comment with user session from github
         let newComment: ShikariComment = new ShikariComment(
             reply.text, 
-            {name: `${username}` ?? "anon", iconPath: vscode.Uri.parse(`https://github.com/${username}.png`)}, 
+            {name: `${username}`, iconPath: vscode.Uri.parse(`https://github.com/${username}.png`)}, 
             commentThread, 
             vscode.CommentMode.Preview,
             commentThread.comments.length ? 'deletable' : undefined,
