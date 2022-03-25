@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { commentsHandler } from './handlers/commentsHandlers';
 import CustomFile from './handlers/fileHandler';
 import { EXTENSION_IS_RUNNING, FILE_CREATION_PLACEHOLDER } from './utils/labels';
 
@@ -15,10 +16,9 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('shikari.startShikari', async () => {
+	let disposableStart = vscode.commands.registerCommand('shikari.startShikari', async () => {
 		// Get the github account
         const session = await vscode.authentication.getSession('github', ['read:user', 'user:email'], { createIfNone: false });
-
 		const username = session?.account.label ?? 'anonymous';
 		// Get file name
 		let fileTitle = await vscode.window.showInputBox({placeHolder: FILE_CREATION_PLACEHOLDER});
@@ -30,7 +30,17 @@ export function activate(context: vscode.ExtensionContext) {
 		};
 	});
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(disposableStart);
+
+	let disposableStartOnCurrentFile = vscode.commands.registerCommand('shikari.startShikariOnCurrentFile', async () => {
+		// Get the github account
+        const session = await vscode.authentication.getSession('github', ['read:user', 'user:email'], { createIfNone: false });
+		const username = session?.account.label ?? 'anonymous';
+		/** Handle comments */
+		commentsHandler(context, username);
+	});
+
+	context.subscriptions.push(disposableStartOnCurrentFile);
 }
 
 // this method is called when your extension is deactivated

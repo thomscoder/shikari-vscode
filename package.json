@@ -10,7 +10,8 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:shikari.startShikari"
+        "onCommand:shikari.startShikari",
+		"onCommand:shikari.startShikariOnCurrentFile"
 	],
 	"main": "./dist/extension.js",
 	"extensionDependencies": [
@@ -21,6 +22,10 @@
 			{
 				"command": "shikari.startShikari",
 				"title": "Shikari: Start Shikari"
+			},
+			{
+				"command": "shikari.startShikariOnCurrentFile",
+				"title": "Shikari: Start On Current File"
 			},
 			{
 				"command": "shikari.saveComment",
