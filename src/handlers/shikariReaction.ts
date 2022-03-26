@@ -1,5 +1,5 @@
 import { CommentReaction, Uri } from "vscode";
-import { LIKE, LIKE_REACTION, LOVE, LOVE_REACTION, WOW, WOW_REACTION } from "../utils/labels";
+import { LIKE, LIKE_REACTION, HEART, LOVE_REACTION, WOW, WOW_REACTION } from "../utils/labels";
 
 // Create reactions for comments
 class ShikariCommentReaction {
@@ -11,8 +11,8 @@ class ShikariCommentReaction {
      * @param {string} reactionUrl url for the reaction image
      */
     constructor(reactionUrl: string) {
-        this.label = reactionUrl.match(/thumbs/) ? LIKE : reactionUrl.match(/heart/) ? LOVE : WOW;
-        this.count = 1;
+        this.label = reactionUrl.match(/thumbs/) ? LIKE : reactionUrl.match(/heart/) ? HEART : WOW;
+        this.count = this.label === LIKE ? 1 : 0;
         this.iconPath = reactionUrl;
         this.authorHasReacted = false;
     }

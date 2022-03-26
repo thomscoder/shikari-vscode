@@ -14,9 +14,6 @@
 		"onCommand:shikari.startShikariOnCurrentFile"
 	],
 	"main": "./dist/extension.js",
-	"extensionDependencies": [
-		"vscode.git"
-	],
 	"contributes": {
 		"commands": [
 			{
@@ -26,6 +23,11 @@
 			{
 				"command": "shikari.startShikariOnCurrentFile",
 				"title": "Shikari: Start On Current File"
+			},
+			{
+				"command": "shikari.cancelComment",
+				"title": "Cancel",
+				"enablement": "!commentIsEmpty"
 			},
 			{
 				"command": "shikari.saveComment",
@@ -40,11 +42,26 @@
 			{
 				"command": "shikari.editComment",
 				"title": "Edit",
-				"enablement": "comment == deletable"
+				"enablement": "comment == deletable",
+				"icon": "$(pencil)"
+			},
+			{
+				"command": "shikari.deleteThread",
+				"title": "Delete Thread",
+				"icon": "$(trash)"
+			},
+			{
+				"command": "shikari.resolveThread",
+				"title": "Resolve Thread",
+				"icon": "$(check)"
 			}
 		],
 		"menus": {
 			"comments/commentThread/context": [
+				{
+					"command": "shikari.cancelComment",
+					"when": "commentEditorFocused"
+				},
 				{
 					"command": "shikari.saveComment",
 					"when": "commentEditorFocused"
@@ -58,6 +75,26 @@
 				{
 					"command": "shikari.editComment",
 					"when": "commentController == shikari && comment == deletable"
+				}
+			],
+			"comments/comment/context": [
+				{
+					"command": "shikari.cancelComment",
+					"when": "commentEditorFocused"
+				},
+				{
+					"command": "shikari.saveComment",
+					"when": "commentEditorFocused"
+				}
+			],
+			"comments/commentThread/title": [
+				{
+					"command": "shikari.deleteThread",
+					"when": "commentController == shikari"
+				},
+				{
+					"command": "shikari.resolveThread",
+					"when": "commentThread == unresolved"
 				}
 			]
 		}		
