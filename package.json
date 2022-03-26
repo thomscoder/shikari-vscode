@@ -52,8 +52,18 @@
 			},
 			{
 				"command": "shikari.resolveThread",
-				"title": "Resolve Thread",
+				"title": "Disable Comments",
 				"icon": "$(check)"
+			},
+			{
+				"command": "shikari.unresolveThread",
+				"title": "Enable Comments",
+				"icon":"$(debug-restart)"
+			},
+			{
+				"command": "shikari.saveThread",
+				"title": "Save Thread",
+				"icon": "$(save)"
 			}
 		],
 		"menus": {
@@ -95,6 +105,14 @@
 				{
 					"command": "shikari.resolveThread",
 					"when": "commentThread == unresolved"
+				}, 
+				{
+					"command": "shikari.unresolveThread",
+					"when": "commentThread == resolved"
+				},
+				{
+					"command": "shikari.saveThread",
+					"when": "commentThread == resolved"
 				}
 			]
 		}		

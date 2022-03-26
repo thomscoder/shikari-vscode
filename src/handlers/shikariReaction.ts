@@ -12,14 +12,9 @@ class ShikariCommentReaction {
      */
     constructor(reactionUrl: string) {
         this.label = reactionUrl.match(/thumbs/) ? LIKE : reactionUrl.match(/heart/) ? HEART : WOW;
-        this.count = this.label === LIKE ? 1 : 0;
+        this.count = 1;
         this.iconPath = reactionUrl;
         this.authorHasReacted = false;
-    }
-
-    // Increase counter
-    public set counter(reactionCounter: number) {
-        this.count = ++reactionCounter;
     }
 
     // Make a new reaction with specified png path

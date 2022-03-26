@@ -1,15 +1,19 @@
+import path = require("path");
 import * as vscode from "vscode";
-import { COMMENT_ID, COMMENT_PLACEHOLDER, DEFAULT_USERNAME } from "../utils/labels";
+import * as fs from 'fs';
+
+import { APP_NAME, COMMENT_PLACEHOLDER, DEFAULT_USERNAME } from "../utils/labels";
 import ShikariComment from "./shikariComment";
 import { heartReaction, likeReaction, wowReaction } from "./shikariReaction";
+import { createShikariFolder, shikariJSON } from "./threadHandler";
 
 
 
 /** Creates a comment thread */
 export const commentsHandler = (context: vscode.ExtensionContext, username: string) => {
     // Start creating comment thread		
-    let commentController = vscode.comments.createCommentController(COMMENT_ID, "shikari");
-    context.subscriptions.push(commentController);
+    let commentController = vscode.comments.createCommentController(APP_NAME, APP_NAME);
+    
 
     // Add decorators
     commentController.commentingRangeProvider = {
@@ -67,7 +71,6 @@ export const commentsHandler = (context: vscode.ExtensionContext, username: stri
         });
 	});
 
-    context.subscriptions.push(createComment);
 
     // Cancel comment
     let cancelComment: vscode.Disposable = vscode.commands.registerCommand('shikari.cancelComment', async (reply: ShikariComment) => {
@@ -76,8 +79,7 @@ export const commentsHandler = (context: vscode.ExtensionContext, username: stri
         // Collapsed
         //reply.shikariCommentThread.collapsibleState = 0;
     });
-
-    context.subscriptions.push(cancelComment);
+    
 
     // Delete comment
     let deleteComment: vscode.Disposable = vscode.commands.registerCommand('shikari.deleteComment', async (comment: ShikariComment) => {
@@ -88,15 +90,13 @@ export const commentsHandler = (context: vscode.ExtensionContext, username: stri
             commentThread.dispose();
         };
     });
-
-    context.subscriptions.push(deleteComment);
+    
 
     // Delete thread
     let deleteThread: vscode.Disposable = vscode.commands.registerCommand('shikari.deleteThread', async (thread: vscode.CommentThread) => {
         thread.dispose();
     });
-
-    context.subscriptions.push(deleteThread);
+    
 
 
     // Edit comment
@@ -114,10 +114,54 @@ export const commentsHandler = (context: vscode.ExtensionContext, username: stri
     context.subscriptions.push(editComment);
 
     // Resolve thread
-    let resolveThread: vscode.Disposable = vscode.commands.registerCommand('shikari.resolveThread', async (reply: ShikariComment) => {
-        reply.shikariCommentThread.canReply = false;
-        reply.shikariCommentThread.contextValue = 'resolved';
+    let resolveThread: vscode.Disposable = vscode.commands.registerCommand('shikari.resolveThread', async (thread: vscode.CommentThread) => {
+        // Lock thread if it has at least on comment
+        if(thread.comments.length > 0) {
+            thread.canReply = false;
+            thread.contextValue = 'resolved';
+        }
+        console.log(thread.canReply);
     });
 
-    context.subscriptions.push(resolveThread);
+
+    // Unresolve thread
+    let unresolveThread: vscode.Disposable = vscode.commands.registerCommand('shikari.unresolveThread', async (thread: vscode.CommentThread) => {
+        thread.canReply = true;
+        thread.contextValue = 'unresolved';
+    });
+
+    // Save thread
+    let saveThread: vscode.Disposable = vscode.commands.registerCommand('shikari.saveThread', async (thread: vscode.CommentThread) => {
+        // Create folder
+        const shikariFolder = createShikariFolder();
+        /** Get current file name */
+        const fileNameToParse = vscode.window.activeTextEditor!.document.fileName.match(/[\w-]+\.\w+/)![0];
+        const filename = `${fileNameToParse.replace(/\W/g, '-')}.js`;
+        const shikariFile = path.join(shikariFolder, filename);
+
+        // Create file if it doesn't exist
+        try {
+            const fileData = shikariJSON(thread);
+            if(!fs.existsSync(shikariFile)) {
+                //const data = shikariJSON(thread);
+                fs.writeFile(shikariFile, fileData, 'utf-8', err => {
+                    console.log(err);
+                });
+            }
+        } catch(err) {
+            console.log(err);
+        }
+    });
+
+
+    context.subscriptions.push(
+        commentController,
+        createComment,
+        cancelComment,
+        deleteComment,
+        deleteThread,
+        resolveThread,
+        unresolveThread,
+        saveThread
+    );
 };
