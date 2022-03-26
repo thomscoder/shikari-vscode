@@ -136,12 +136,12 @@ export const commentsHandler = (context: vscode.ExtensionContext, username: stri
         const shikariFolder = createShikariFolder();
         /** Get current file name */
         const fileNameToParse = vscode.window.activeTextEditor!.document.fileName.match(/[\w-]+\.\w+/)![0];
-        const filename = `${fileNameToParse.replace(/\W/g, '-')}.js`;
+        const filename = `${fileNameToParse.replace(/\W/g, '-')}.json`;
         const shikariFile = path.join(shikariFolder, filename);
 
         // Create file if it doesn't exist
         try {
-            const fileData = shikariJSON(thread);
+            const fileData = await shikariJSON(thread);
             if(!fs.existsSync(shikariFile)) {
                 //const data = shikariJSON(thread);
                 fs.writeFile(shikariFile, fileData, 'utf-8', err => {

@@ -1,26 +1,29 @@
 import * as fs from 'fs';
-import path = require('path');
 import { CommentThread, window, workspace } from "vscode";
-import { CREATED_FILE, FAILED_TO_CREATE_BOILERPLATE, FOLDER_CREATED } from '../utils/labels';
+import { FAILED_TO_CREATE_BOILERPLATE, FOLDER_CREATED } from '../utils/labels';
 
-export const shikariJSON = (thread: CommentThread): string => {
-    const stringifiedThread = {
-        canReply: thread.canReply,
-        collapsibleState: thread.collapsibleState,
-        comments: thread.comments,
-        contextValue: thread.contextValue,
-        label: thread.label,
-        range: thread.range,
-        uri: thread.uri,
+export const shikariJSON = async (thread: CommentThread): Promise<string> => {
+    /** Replace function to prevent circular objects error when parsing JSON */
+     const replacerFunc = () => {
+        const visited = new WeakSet();
+        return (key: any, value: any) => {
+            if (typeof value === "object" && value !== null) {
+            if (visited.has(value)) {
+                return;
+            }
+            visited.add(value);
+            }
+            return value;
+        };
     };
-    return JSON.stringify(stringifiedThread);
+    return JSON.stringify(thread, replacerFunc(), 4);
 };
 
 export const createShikariFolder = (): string => {
     /** Get workspace path */
     const wsPath: string = workspace.workspaceFolders![0].uri?.toString().split(':')[1];
     // File and folder creation paths
-    const shikariFolder: string = `${wsPath}/shikari`;
+    const shikariFolder: string = `${wsPath}/.shikari`;
     // Create folder if it doesn't exist
 	if(!fs.existsSync(shikariFolder)) {
         fs.mkdir(shikariFolder, err => {
