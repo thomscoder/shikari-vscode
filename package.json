@@ -32,7 +32,8 @@
 			{
 				"command": "shikari.saveComment",
 				"title": "Comment",
-				"enablement": "!commentIsEmpty"
+				"enablement": "!commentIsEmpty",
+				"icon": "$(comment)"
 			},
 			{
 				"command": "shikari.deleteComment",
@@ -64,6 +65,11 @@
 				"command": "shikari.saveThread",
 				"title": "Save Thread",
 				"icon": "$(save)"
+			},
+			{
+				"command": "shikari.downloadThread",
+				"title": "Shikari: Download Thread",
+				"icon": "$(cloud-download)"
 			}
 		],
 		"menus": {
@@ -113,6 +119,12 @@
 				{
 					"command": "shikari.saveThread",
 					"when": "commentThread == resolved"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "shikari.downloadThread",
+					"group": "navigation"
 				}
 			]
 		}		

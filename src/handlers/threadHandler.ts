@@ -3,7 +3,7 @@ import { CommentThread, window, workspace } from "vscode";
 import { FAILED_TO_CREATE_BOILERPLATE, FOLDER_CREATED } from '../utils/labels';
 
 export const shikariJSON = async (thread: CommentThread): Promise<string> => {
-    /** Replace function to prevent circular objects error when parsing JSON */
+    /** Replacer function to prevent circular objects error when parsing JSON */
      const replacerFunc = () => {
         const visited = new WeakSet();
         return (key: any, value: any) => {
@@ -15,6 +15,16 @@ export const shikariJSON = async (thread: CommentThread): Promise<string> => {
             }
             return value;
         };
+    };
+    /** Object to turn into JSON */
+    const stringifiedThread = {
+        canReply: thread.canReply,
+        collapsibleState: thread.collapsibleState,
+        comments: thread.comments,
+        contextValue: thread.contextValue,
+        label: thread.label,
+        range: thread.range,
+        uri: thread.uri,
     };
     return JSON.stringify(thread, replacerFunc(), 4);
 };

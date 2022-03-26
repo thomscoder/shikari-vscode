@@ -2,7 +2,7 @@ import path = require("path");
 import * as vscode from "vscode";
 import * as fs from 'fs';
 
-import { APP_NAME, COMMENT_PLACEHOLDER, DEFAULT_USERNAME } from "../utils/labels";
+import { APP_NAME, COMMENT_PLACEHOLDER } from "../utils/labels";
 import ShikariComment from "./shikariComment";
 import { heartReaction, likeReaction, wowReaction } from "./shikariReaction";
 import { createShikariFolder, shikariJSON } from "./threadHandler";
@@ -34,7 +34,29 @@ export const commentsHandler = (context: vscode.ExtensionContext, username: stri
      * Also adds the "add reaction" icon
      */
     commentController.reactionHandler = async (comment: vscode.Comment, reaction: vscode.CommentReaction): Promise<void> => {}; 
-
+    
+    // Download thread comments
+    let downloadThread: vscode.Disposable = vscode.commands.registerCommand('shikari.downloadThread', async (thread: vscode.CommentThread) => {
+        // Check if file exists inside .shikari folder
+        const fileNameToParse = vscode.window.activeTextEditor!.document.fileName.match(/[\w-]+\.\w+/)![0];
+        const filename = `${fileNameToParse.replace(/\W/g, '-')}.json`;
+        const wsPath: string = vscode.workspace.workspaceFolders![0].uri?.toString().split(':')[1];
+        const shikariFolder: string = `${wsPath}/.shikari`;
+        const shikariFile: string = path.join(shikariFolder, filename);
+        if(fs.existsSync(shikariFile)) {
+            const fileData: string = fs.readFileSync(shikariFile, 'utf8');
+            let savedThread = JSON.parse(fileData);
+            // Get the range of saved thread from file 
+            let range = new vscode.Range(
+                savedThread.value.range[0].line, 
+                savedThread.value.range[0].character, 
+                savedThread.value.range[1].line,
+                savedThread.value.range[1].character
+            );
+            const commentThread = commentController.createCommentThread(savedThread.value.uri, range, savedThread._comments);
+            commentThread.comments.map(comment => comment.author.iconPath = vscode.Uri.parse(`https://github.com/${comment.author.name}.png`));
+        }
+    });
     
     // Save comment
     let createComment: vscode.Disposable = vscode.commands.registerCommand('shikari.saveComment', async (reply: vscode.CommentReply) => {
@@ -111,8 +133,6 @@ export const commentsHandler = (context: vscode.ExtensionContext, username: stri
         });
     });
 
-    context.subscriptions.push(editComment);
-
     // Resolve thread
     let resolveThread: vscode.Disposable = vscode.commands.registerCommand('shikari.resolveThread', async (thread: vscode.CommentThread) => {
         // Lock thread if it has at least on comment
@@ -138,25 +158,23 @@ export const commentsHandler = (context: vscode.ExtensionContext, username: stri
         const fileNameToParse = vscode.window.activeTextEditor!.document.fileName.match(/[\w-]+\.\w+/)![0];
         const filename = `${fileNameToParse.replace(/\W/g, '-')}.json`;
         const shikariFile = path.join(shikariFolder, filename);
-
         // Create file if it doesn't exist
         try {
             const fileData = await shikariJSON(thread);
-            if(!fs.existsSync(shikariFile)) {
-                //const data = shikariJSON(thread);
-                fs.writeFile(shikariFile, fileData, 'utf-8', err => {
-                    console.log(err);
-                });
-            }
+            //const data = shikariJSON(thread);
+            fs.writeFile(shikariFile, fileData, 'utf-8', err => {
+                console.log(err);
+            });
         } catch(err) {
             console.log(err);
         }
     });
 
-
     context.subscriptions.push(
         commentController,
+        downloadThread,
         createComment,
+        editComment,
         cancelComment,
         deleteComment,
         deleteThread,

@@ -26,11 +26,8 @@ export function activate(context: vscode.ExtensionContext) {
 			// Create the file
 			const file = new CustomFile(fileTitle, watcher, context, username);
         	file.startWriting();
-			// If file created successfully start a comment thread
 		};
 	});
-
-	context.subscriptions.push(disposableStart);
 
 	let disposableStartOnCurrentFile = vscode.commands.registerCommand('shikari.startShikariOnCurrentFile', async () => {
 		// Get the github account
@@ -38,9 +35,13 @@ export function activate(context: vscode.ExtensionContext) {
 		const username = session?.account.label ?? 'anonymous';
 		/** Handle comments */
 		commentsHandler(context, username);
+		const downloaded = await vscode.commands.executeCommand('shikari.downloadThread');
 	});
 
-	context.subscriptions.push(disposableStartOnCurrentFile);
+	context.subscriptions.push(
+		disposableStart,
+		disposableStartOnCurrentFile
+	);
 }
 
 // this method is called when your extension is deactivated
