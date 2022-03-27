@@ -2,6 +2,7 @@
   "name": "shikari",
 	"displayName": "Shikari",
 	"description": "",
+	"publisher": "thomscoder",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.65.0"
@@ -9,6 +10,10 @@
 	"categories": [
 		"Other"
 	],
+	"repository": {
+		"type": "git",
+		"repository": "https://github.com/thomscoder/shikari-vscode.git"
+	},
 	"activationEvents": [
         "onCommand:shikari.startShikari",
 		"onCommand:shikari.startShikariOnCurrentFile"

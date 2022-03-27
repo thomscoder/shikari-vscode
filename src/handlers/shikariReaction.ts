@@ -12,7 +12,7 @@ class ShikariCommentReaction {
      */
     constructor(reactionUrl: string) {
         this.label = reactionUrl.match(/thumbs/) ? LIKE : reactionUrl.match(/heart/) ? HEART : WOW;
-        this.count = 1;
+        this.count = 0;
         this.iconPath = reactionUrl;
         this.authorHasReacted = false;
     }
